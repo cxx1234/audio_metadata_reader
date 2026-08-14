@@ -203,8 +203,10 @@ class AiffParser extends TagParser<RiffMetadata> {
       metadata.title = id3.songName;
     }
 
+    // ID3 semantics: TPE1 = lead performer (main artist), TPE2 = album artist.
+    // Prefer TPE1 so the generic `artist` never resolves to the album artist.
     final id3Artist =
-        id3.bandOrOrchestra ?? id3.leadPerformer ?? id3.originalArtist;
+        id3.leadPerformer ?? id3.bandOrOrchestra ?? id3.originalArtist;
     if (_hasText(id3Artist)) {
       metadata.artist = id3Artist;
     }

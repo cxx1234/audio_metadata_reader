@@ -52,8 +52,11 @@ AudioMetadata readMetadata(File track, {bool getImage = false}) {
       final a = AudioMetadata(
         file: track,
         album: mp3Metadata.album,
-        artist: mp3Metadata.bandOrOrchestra ??
-            mp3Metadata.leadPerformer ??
+        // ID3 semantics: TPE1 = lead performer (main artist), TPE2 = album
+        // artist. Prefer TPE1 so the generic `artist` never resolves to the
+        // album artist; fall back to TPE2 and finally to TOPE (original artist).
+        artist: mp3Metadata.leadPerformer ??
+            mp3Metadata.bandOrOrchestra ??
             mp3Metadata.originalArtist,
         albumArtist: mp3Metadata.albumArtist,
         bitrate: mp3Metadata.bitrate,

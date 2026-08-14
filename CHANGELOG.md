@@ -1,3 +1,19 @@
+## [Unreleased]
+
+### Bug Fixes
+
+* prefer ID3 `TPE1` over `TPE2` for the generic MP3 `artist` view
+
+  `readMetadata` previously resolved the generic `artist` for MP3 as
+  `TPE2` (album artist) first, then `TPE1`. Since TPE1 is the lead
+  performer and TPE2 the album artist, the generic view now prefers
+  `TPE1` (falling back to `TPE2`, then `TOPE`). The same ordering was
+  applied to WAV/AIFF files that embed an ID3 chunk.
+
+  **Breaking change**: files that only carry `TPE2` (no `TPE1`) will
+  now report `artist == null` instead of returning the album artist.
+  Use `albumArtist` for that value.
+
 ## [1.7.0](https://github.com/ClementBeal/audio_metadata_reader/compare/v1.6.0...v1.7.0) (2026-07-27)
 
 
