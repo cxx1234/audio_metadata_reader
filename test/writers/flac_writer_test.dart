@@ -82,4 +82,20 @@ void main() {
       });
     });
   }
+
+  test('albumArtist round-trips through FlacWriter', () {
+    final dir = Directory.systemTemp.createTempSync();
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final target = File('${dir.path}/track.flac');
+    target
+        .writeAsBytesSync(File('test/flac/no_picture.flac').readAsBytesSync());
+
+    final metadata = readAllMetadata(target, getImage: false) as VorbisMetadata;
+    metadata.albumArtist = ['幽閉サテライト'];
+
+    FlacWriter().write(target, metadata);
+
+    final reRead = readAllMetadata(target, getImage: false) as VorbisMetadata;
+    expect(reRead.albumArtist, equals(['幽閉サテライト']));
+  });
 }

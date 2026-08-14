@@ -70,8 +70,14 @@ void parseVorbisComment(
         metadata.trackNumber.add(int.parse(value));
       }
       break;
-    case 'ARTIST' || "ALBUMARTIST":
+    case 'ARTIST':
       metadata.artist.add(value);
+      break;
+    case 'ALBUMARTIST':
+      // Album artist is a distinct concept from the main artist list.
+      // Splitting it out lets callers expose it as `albumArtist` (mirroring
+      // lofty's ItemKey::AlbumArtist) instead of leaking it into `artist`.
+      metadata.albumArtist.add(value);
       break;
     case 'PERFORMER':
       metadata.performer.add(value);

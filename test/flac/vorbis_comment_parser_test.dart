@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audio_metadata_reader/src/metadata/base.dart';
 import 'package:audio_metadata_reader/src/parsers/tags/vorbis_comment.dart';
 import 'package:test/test.dart';
@@ -27,5 +29,28 @@ void main() {
     parseVorbisComment('LENGTH=236'.codeUnits, metadata, fetchImage: false);
 
     expect(metadata.duration, const Duration(seconds: 236));
+  });
+
+  test('Parse ALBUMARTIST Vorbis comment into dedicated field', () {
+    final metadata = VorbisMetadata();
+
+    parseVorbisComment(utf8.encode('ALBUMARTIST=幽閉サテライト'), metadata,
+        fetchImage: false);
+
+    expect(metadata.albumArtist, equals(['幽閉サテライト']));
+    expect(metadata.artist, isEmpty);
+    expect(metadata.unknowns.containsKey('ALBUMARTIST'), isFalse);
+  });
+
+  test('ARTIST and ALBUMARTIST stay separated', () {
+    final metadata = VorbisMetadata();
+
+    parseVorbisComment(utf8.encode('ARTIST=森永真由美'), metadata,
+        fetchImage: false);
+    parseVorbisComment(utf8.encode('ALBUMARTIST=幽閉サテライト'), metadata,
+        fetchImage: false);
+
+    expect(metadata.artist, equals(['森永真由美']));
+    expect(metadata.albumArtist, equals(['幽閉サテライト']));
   });
 }

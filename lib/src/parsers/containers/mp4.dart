@@ -43,6 +43,7 @@ final supportedBox = [
   "pgap",
   "©nam",
   "©ART",
+  "aART",
   "©alb",
   "©cmt",
   "©day",
@@ -181,8 +182,18 @@ class MP4Parser extends TagParser<Mp4Metadata> {
       // `chpl` is a chapter list atom used by many MP4/M4A encoders.
       _parseChapterListBox(buffer.read(box.size - 8));
     } else if (box.type[0] == "©" ||
-        ["gnre", "trkn", "disk", "tmpo", "cpil", "too", "covr", "pgap", "gen"]
-            .contains(box.type)) {
+        [
+          "aART",
+          "gnre",
+          "trkn",
+          "disk",
+          "tmpo",
+          "cpil",
+          "too",
+          "covr",
+          "pgap",
+          "gen"
+        ].contains(box.type)) {
       final boxName = (box.type[0] == "©") ? box.type.substring(1) : box.type;
 
       if (boxName == "covr" && !fetchImage) {
@@ -207,6 +218,11 @@ class MP4Parser extends TagParser<Mp4Metadata> {
           break;
         case "ART":
           tags.artist = value;
+          break;
+        case "aART":
+          // Album artist is stored in its own `aART` atom, distinct from the
+          // main `©ART` track artist (mirrors lofty's ItemKey::AlbumArtist).
+          tags.albumArtist = value;
           break;
         case "alb":
           tags.album = value;

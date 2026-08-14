@@ -30,6 +30,9 @@ class Mp3Metadata extends ParserTag {
   String? leadPerformer; // TPE1
   String? bandOrOrchestra; // TPE2
   String? conductor; // TPE3
+
+  /// Album artist (`TPE2`) — unified naming across formats.
+  String? get albumArtist => bandOrOrchestra;
   String? interpreted; // TPE4
   String? partOfSet; // TPOS
   String? publisher; // TPUB

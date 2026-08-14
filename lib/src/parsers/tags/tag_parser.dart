@@ -47,6 +47,11 @@ class AudioMetadata {
   /// In popular music this is usually the performing band or singer
   String? artist;
 
+  /// The album artist of the track
+  /// For example with a compilation, this is the band behind the album
+  /// even when the track itself features a different performing artist.
+  String? albumArtist;
+
   /// The artists that are on a track but are not consired as the main artist
   /// For instance with `Dr. Dre - Still D.R.E. ft. Snoop Dogg`, Snoop Dogg is
   /// a performer
@@ -95,6 +100,7 @@ class AudioMetadata {
     this.year,
     this.language,
     this.artist,
+    this.albumArtist,
     this.title,
     this.trackNumber,
     this.trackTotal,
@@ -118,6 +124,7 @@ class AudioMetadata {
         '  year: $year,\n'
         '  language: $language,\n'
         '  artist: $artist,\n'
+        '  albumArtist: $albumArtist,\n'
         '  title: $title,\n'
         '  trackNumber: $trackNumber,\n'
         '  trackTotal: $trackTotal,\n'

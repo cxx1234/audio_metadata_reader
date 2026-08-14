@@ -30,3 +30,12 @@ migrate_working_dir/
 build/
 
 a.dart
+
+# Large test audio assets (pre-downloaded / generated files - do not commit)
+test/flac/幽閉サテライト - 大地に咲く旋律 (with senya).flac
+test/mp3/黒うさP - 下弦の月.mp3
+test/mp4/SawanoHiroyuki\[nZk\] - Unti-L.m4a
+test/mp4/結束バンド - 光の中へ.m4a
+
+# Local handoff document (not part of the public docs/)
+docs/audio-metadata-reader-handoff.md
