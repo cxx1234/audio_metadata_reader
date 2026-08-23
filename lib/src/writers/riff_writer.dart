@@ -16,25 +16,31 @@ class RiffWriter extends BaseMetadataWriter<RiffMetadata> {
   late final Buffer buffer;
 
   @override
-  void write(File file, RiffMetadata metadata) {
+  void writeContents(File source, File destination, RiffMetadata metadata) {
     this.metadata = metadata;
     final builder = BytesBuilder();
 
-    final reader = file.openSync();
+    final reader = source.openSync();
     buffer = Buffer(randomAccessFile: reader);
-    reader.setPositionSync(0);
+    late final Uint8List output;
 
-    buffer.skip(12);
-    final newData = _parseChunks();
+    try {
+      reader.setPositionSync(0);
 
-    builder.add("RIFF".codeUnits);
-    // RIFF chunk size is file size - 8, i.e. 4 ("WAVE") + payload bytes.
-    builder.add(intToUint32LE(newData.length + 4));
-    builder.add("WAVE".codeUnits);
-    builder.add(newData);
+      buffer.skip(12);
+      final newData = _parseChunks();
 
-    reader.closeSync();
-    file.writeAsBytesSync(builder.toBytes());
+      builder.add("RIFF".codeUnits);
+      // RIFF chunk size is file size - 8, i.e. 4 ("WAVE") + payload bytes.
+      builder.add(intToUint32LE(newData.length + 4));
+      builder.add("WAVE".codeUnits);
+      builder.add(newData);
+      output = builder.takeBytes();
+    } finally {
+      reader.closeSync();
+    }
+
+    destination.writeAsBytesSync(output);
   }
 
   Uint8List _parseChunks() {
@@ -88,6 +94,27 @@ class RiffWriter extends BaseMetadataWriter<RiffMetadata> {
           }
           if (metadata.copyright != null) {
             infoBuilder.add(_writeChunk("ICOP", metadata.copyright!));
+          }
+
+          // INFO is extensible. Re-emit fields that the parser did not map to
+          // the common model, while avoiding collisions with fields written
+          // above. The parser only accepts four-character INFO identifiers,
+          // so these keys are valid RIFF subchunk identifiers here.
+          const knownInfoIds = <String>{
+            'INAM',
+            'IART',
+            'IPRD',
+            'ICRD',
+            'ICMT',
+            'ITRK',
+            'ISFT',
+            'IGNR',
+            'ICOP',
+          };
+          for (final entry in metadata.unknowns.entries) {
+            if (!knownInfoIds.contains(entry.key)) {
+              infoBuilder.add(_writeChunk(entry.key, entry.value));
+            }
           }
 
           final infoData = infoBuilder.toBytes();
