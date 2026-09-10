@@ -14,8 +14,8 @@ class VorbisMetadata extends ParserTag {
   List<int> trackNumber = []; // TRACKNUMBER
   /// Main artist values (`ARTIST`).
   List<String> artist = []; // ARTIST
-  /// Album artist values (`ALBUMARTIST`).
-  List<String> albumArtist = []; // ALBUMARTIST
+  /// Album-level artist values (`ALBUMARTIST`/`ALBUM_ARTIST`).
+  List<String> albumArtist = []; // ALBUMARTIST / ALBUM_ARTIST
   /// Additional performers (`PERFORMER`).
   List<String> performer = []; // PERFORMER
   /// Copyright statements (`COPYRIGHT`).

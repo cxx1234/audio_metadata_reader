@@ -36,6 +36,12 @@ class AudioMetadata {
   /// The name of the album
   String? album;
 
+  /// The main artist credited for the whole album.
+  ///
+  /// This is distinct from [artist], which identifies the artist credited on
+  /// the individual track. It is useful for compilations and guest features.
+  String? albumArtist;
+
   /// The year of when the album/track has been released
   DateTime? year;
 
@@ -46,11 +52,6 @@ class AudioMetadata {
   /// For classical music, it would be the composer
   /// In popular music this is usually the performing band or singer
   String? artist;
-
-  /// The album artist of the track
-  /// For example with a compilation, this is the band behind the album
-  /// even when the track itself features a different performing artist.
-  String? albumArtist;
 
   /// The artists that are on a track but are not consired as the main artist
   /// For instance with `Dr. Dre - Still D.R.E. ft. Snoop Dogg`, Snoop Dogg is
@@ -97,10 +98,10 @@ class AudioMetadata {
 
   AudioMetadata({
     this.album,
+    this.albumArtist,
     this.year,
     this.language,
     this.artist,
-    this.albumArtist,
     this.title,
     this.trackNumber,
     this.trackTotal,
@@ -121,10 +122,10 @@ class AudioMetadata {
   String toString() {
     return 'AudioMetadata(\n'
         '  album: $album,\n'
+        '  albumArtist: $albumArtist,\n'
         '  year: $year,\n'
         '  language: $language,\n'
         '  artist: $artist,\n'
-        '  albumArtist: $albumArtist,\n'
         '  title: $title,\n'
         '  trackNumber: $trackNumber,\n'
         '  trackTotal: $trackTotal,\n'

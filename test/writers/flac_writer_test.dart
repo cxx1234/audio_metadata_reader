@@ -83,19 +83,22 @@ void main() {
     });
   }
 
-  test('albumArtist round-trips through FlacWriter', () {
-    final dir = Directory.systemTemp.createTempSync();
-    addTearDown(() => dir.deleteSync(recursive: true));
-    final target = File('${dir.path}/track.flac');
-    target
-        .writeAsBytesSync(File('test/flac/no_picture.flac').readAsBytesSync());
+  test('writes and reads back the album artist Vorbis comment', () {
+    final directory = Directory.systemTemp.createTempSync();
+    addTearDown(() => directory.deleteSync(recursive: true));
+    final target = File('${directory.path}/track.flac')
+      ..writeAsBytesSync(File('test/flac/album_artist.flac').readAsBytesSync());
 
-    final metadata = readAllMetadata(target, getImage: false) as VorbisMetadata;
-    metadata.albumArtist = ['幽閉サテライト'];
+    updateMetadata(target, (metadata) {
+      final vorbisMetadata = metadata as VorbisMetadata;
+      vorbisMetadata.albumArtist
+        ..clear()
+        ..add('Updated album artist');
+    });
 
-    FlacWriter().write(target, metadata);
+    final result = readMetadata(target, getImage: false);
 
-    final reRead = readAllMetadata(target, getImage: false) as VorbisMetadata;
-    expect(reRead.albumArtist, equals(['幽閉サテライト']));
+    expect(result.artist, equals('Track artist'));
+    expect(result.albumArtist, equals('Updated album artist'));
   });
 }

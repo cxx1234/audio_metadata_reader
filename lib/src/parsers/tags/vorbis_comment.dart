@@ -73,10 +73,9 @@ void parseVorbisComment(
     case 'ARTIST':
       metadata.artist.add(value);
       break;
-    case 'ALBUMARTIST':
-      // Album artist is a distinct concept from the main artist list.
-      // Splitting it out lets callers expose it as `albumArtist` (mirroring
-      // lofty's ItemKey::AlbumArtist) instead of leaking it into `artist`.
+    case 'ALBUMARTIST' || 'ALBUM_ARTIST':
+      // ALBUMARTIST is a common Vorbis comment convention. Some taggers,
+      // including FFmpeg, use the equivalent ALBUM_ARTIST spelling.
       metadata.albumArtist.add(value);
       break;
     case 'PERFORMER':
