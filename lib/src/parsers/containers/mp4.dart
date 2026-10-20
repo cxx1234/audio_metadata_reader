@@ -262,6 +262,12 @@ class MP4Parser extends TagParser<Mp4Metadata> {
 
       if (boxName == "covr" && !fetchImage) {
         buffer.skip(box.payloadSize);
+      } else if (box.payloadSize < 8) {
+        // Empty or truncated atom: the payload cannot even hold the 8-byte
+        // `data` box header (size + type), so it carries no value. Skipping it
+        // keeps files with such atoms readable instead of throwing while
+        // slicing the payload below.
+        buffer.skip(box.payloadSize);
       } else {
         final Uint8List metadataValue = buffer.read(box.payloadSize);
 
@@ -283,8 +289,8 @@ class MP4Parser extends TagParser<Mp4Metadata> {
             tags.artist = value;
             break;
           case "aART":
-            // Album artist is stored in its own `aART` atom, distinct from the
-            // main `©ART` track artist (mirrors lofty's ItemKey::AlbumArtist).
+            // The iTunes metadata spec stores the album artist in its own
+            // `aART` atom, separate from the track artist in `©ART`.
             tags.albumArtist = value;
             break;
           case "alb":

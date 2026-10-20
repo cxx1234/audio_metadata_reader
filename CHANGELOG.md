@@ -1,6 +1,24 @@
 ## [Unreleased]
 
+### Features
+
+* read and write the MP4/M4A album artist (`aART`)
+
+  `Mp4Metadata` now exposes `albumArtist`. The `aART` atom is parsed
+  alongside `©ART` and written back by `Mp4Writer`, and `readMetadata`
+  maps it to `AudioMetadata.albumArtist`. Files that only carry the
+  track artist are unaffected. Because the parser detects the container
+  from its `ftyp` box, this applies to every MP4-family file it handles
+  (`.m4a`, `.mp4`, `.mov`, `.m4b`, `.3gp`, ...).
+
 ### Bug Fixes
+
+* ignore empty MP4 tag atoms instead of failing
+
+  An atom whose payload is shorter than the 8-byte nested `data` box
+  header (for example a size-8 `aART` atom) made the parser throw a
+  `RangeError`, which surfaced as `MetadataParserException` for the
+  whole file. Such atoms are now skipped.
 
 * prefer ID3 `TPE1` over `TPE2` for the generic MP3 `artist` view
 
