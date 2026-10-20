@@ -12,7 +12,7 @@ void main() {
 
     expect(result.title, equals('Simple title'));
     expect(result.sampleRate, equals(44100));
-    expect(result.bitrate, equals(176400));
+    expect(result.bitrate, equals(1411200));
     expect(result.duration?.inSeconds, equals(1));
     expect(result.lyrics, isNull);
   });
@@ -54,8 +54,30 @@ void main() {
     expect(result.year, equals(DateTime(2014)));
     expect(result.genres, contains('Rock'));
     expect(result.sampleRate, equals(44100));
-    expect(result.bitrate, equals(176400));
+    expect(result.bitrate, equals(1411200));
   });
+
+  for (final String path in <String>[
+    'test/aiff/track_id3_cover.aiff',
+    'test/aiff/track_id3_cover.aifc',
+  ]) {
+    test('returns embedded artwork of $path when getImage is true', () {
+      final AudioMetadata metadata = readMetadata(File(path), getImage: true);
+
+      expect(metadata.pictures, hasLength(1));
+      final Picture picture = metadata.pictures.single;
+      expect(
+          picture.bytes, equals(File('test/data/cover.png').readAsBytesSync()));
+      expect(picture.mimetype, equals('image/png'));
+      expect(picture.pictureType, equals(PictureType.coverFront));
+    });
+
+    test('skips embedded artwork of $path when getImage is false', () {
+      final AudioMetadata metadata = readMetadata(File(path), getImage: false);
+
+      expect(metadata.pictures, isEmpty);
+    });
+  }
 
   test('readAllMetadata exposes AIFF ID3 values in RiffMetadata', () {
     final track = File('test/aiff/track_id3.aiff');
