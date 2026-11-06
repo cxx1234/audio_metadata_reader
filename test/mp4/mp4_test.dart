@@ -45,6 +45,25 @@ void main() {
     expect(result.title, equals("ALAC title"));
     expect(result.sampleRate, equals(48000));
   });
+  test("Read the exact sample rate of a Hi-Res ALAC file", () {
+    // ALAC stores the sample rate twice: as a 16.16 fixed-point value in the
+    // AudioSampleEntry and as a full 32-bit value in its magic cookie. The
+    // fixed-point field cannot represent rates above 65535 Hz, so this
+    // 96 kHz file stores 48000 there and the cookie must win.
+    //
+    // The fixture is generated once with ffmpeg:
+    //
+    // ffmpeg -f lavfi -i "anullsrc=r=96000:cl=mono" -t 0.25 -c:a alac \
+    //   -sample_fmt s32p -metadata title="Hi-Res ALAC" \
+    //   test/mp4/track_alac_hires.m4a
+    final File track = File('./test/mp4/track_alac_hires.m4a');
+    final AudioMetadata result = readMetadata(track, getImage: false);
+
+    expect(result.title, equals("Hi-Res ALAC"));
+    expect(result.sampleRate, equals(96000));
+    // Average bitrate from the ALAC magic cookie.
+    expect(result.bitrate, equals(2304000));
+  });
   test("Parse MP4 file and the cover", () {
     final track = File('./test/mp4/track.m4a');
     final result = readMetadata(track, getImage: true);
