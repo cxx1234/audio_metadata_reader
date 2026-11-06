@@ -13,6 +13,22 @@
 
 ### Bug Fixes
 
+* read the exact sample rate of Hi-Res ALAC (Apple Lossless) files
+
+  ALAC stores its sample rate both as a 16.16 fixed-point value in the
+  `alac` sample entry and as a full 32-bit value in its magic cookie.
+  Because the fixed-point field cannot hold rates above 65535 Hz, 88.2 kHz
+  and 96 kHz files store half the rate there, so the parser reported
+  44100/48000 instead of 88200/96000. The magic cookie is now parsed and
+  takes precedence. Its average bitrate also fills `bitrate`, which used to
+  stay `null` for every ALAC file.
+
+* read the MP4/M4A sample rate at the correct offset
+
+  The AudioSampleEntry sample-rate field was read at offset 22 instead of
+  24 (relative to the sample-entry payload). That only happened to work when
+  the packet-size field was zero and the rate fit in 16 bits.
+
 * ignore empty MP4 tag atoms instead of failing
 
   An atom whose payload is shorter than the 8-byte nested `data` box
